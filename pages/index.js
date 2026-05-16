@@ -89,11 +89,14 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </Head>
 
-      {/* Gray background visible top and bottom as gap */}
-      <main className="min-h-screen bg-gray-200 flex items-center justify-center py-4 px-4">
-        <div className="w-full h-full md:max-w-lg flex flex-col overflow-hidden bg-white rounded-3xl shadow-2xl"
-          style={{ height: "calc(100vh - 32px)", maxHeight: "880px" }}>
-
+      <main
+        className="bg-gray-200 flex items-center justify-center"
+        style={{ height: "100dvh", padding: "16px" }}
+      >
+        <div
+          className="w-full md:max-w-lg flex flex-col overflow-hidden bg-white rounded-3xl shadow-2xl"
+          style={{ height: "100%", maxHeight: "880px" }}
+        >
           {/* Header */}
           <div className="flex items-center gap-3 px-5 py-4 bg-white border-b border-gray-100 shadow-sm shrink-0">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-lg shrink-0">
@@ -125,7 +128,6 @@ export default function Home() {
           />
 
           <MessageInput onSend={handleSend} disabled={isTyping} />
-
         </div>
       </main>
     </>

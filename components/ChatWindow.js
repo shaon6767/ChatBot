@@ -2,11 +2,10 @@ import { useEffect, useRef } from "react";
 
 function WelcomeScreen({ config, onSuggestion }) {
   return (
-    <div className="flex flex-col flex-1 overflow-y-auto chat-scroll py-4 px-4">
-      <div className="flex flex-col gap-4 mx-2 my-3">
+    <div className="flex-1 overflow-y-auto chat-scroll px-4 py-4">
+      <div className="flex flex-col gap-4 mx-1 my-2">
 
-        {/* Welcome card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-6 py-6 flex flex-col gap-3">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-5 flex flex-col gap-3">
           <p className="text-sm font-semibold text-gray-500 text-center">
             Welcome, how can I help you today?
           </p>
@@ -16,17 +15,14 @@ function WelcomeScreen({ config, onSuggestion }) {
           </p>
         </div>
 
-        {/* Tagline */}
         <p className="text-xs text-center text-gray-400 leading-relaxed px-2">
           For order, give us your information. Just ask about any product and it will give you anything you need to know.
         </p>
 
-        {/* Hint */}
         <p className="text-xs text-center text-gray-400 animate-bounce">
           নিচে লিখুন বা একটি প্রশ্ন বেছে নিন ↓
         </p>
 
-        {/* Suggestion chips */}
         <div className="grid grid-cols-2 gap-2">
           {[
             "কি কি পণ্য আছে?",
@@ -53,7 +49,7 @@ function WelcomeScreen({ config, onSuggestion }) {
 
 function TypingIndicator() {
   return (
-    <div className="flex items-end gap-2 mb-3">
+    <div className="flex items-center gap-2 mb-3">
       <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-xs shrink-0">
         👩‍💼
       </div>
@@ -157,18 +153,26 @@ function Message({ msg }) {
   const isUser = msg.role === "user";
 
   return (
-    <div className={`flex items-end gap-2 mb-3 ${isUser ? "flex-row-reverse pl-8" : "flex-row pr-8"}`}>
+    <div className={`flex items-center gap-2 mb-4 ${isUser ? "flex-row-reverse pl-6" : "flex-row pr-6"}`}>
+
+      {/* Avatar */}
       <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs shrink-0
-        ${isUser ? "bg-gray-200" : "bg-gradient-to-br from-indigo-600 to-violet-600"}`}>
+        ${isUser
+          ? "bg-indigo-100"
+          : "bg-gradient-to-br from-indigo-600 to-violet-600"
+        }`}>
         {isUser ? "👤" : "👩‍💼"}
       </div>
-      <div className={`px-3.5 py-2.5 text-sm leading-relaxed break-words rounded-2xl
+
+      {/* Message — user is blue text no bg, AI is plain black text */}
+      <div className={`text-sm leading-relaxed break-words
         ${isUser
-          ? "bg-gradient-to-br from-indigo-600 to-violet-600 text-white rounded-br-sm shadow-md"
-          : "bg-transparent text-gray-800 rounded-bl-sm"
+          ? "text-indigo-600 font-medium"
+          : "text-gray-800"
         }`}>
         <MessageContent content={msg.content} />
       </div>
+
     </div>
   );
 }
@@ -183,7 +187,7 @@ export default function ChatWindow({ messages, isTyping, config, onSuggestion })
   }, [messages, isTyping]);
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-gray-50">
+    <div className="flex-1 flex flex-col min-h-0 bg-gray-50 overflow-hidden">
       {isEmpty ? (
         <WelcomeScreen config={config} onSuggestion={onSuggestion} />
       ) : (
