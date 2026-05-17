@@ -159,12 +159,14 @@ YOUR JOB:
 - Never reveal you are an AI unless directly asked
 - Guide interested buyers through the order process`;
 
-  // 3 layer fallback — tries each one until a reply comes back
-  const layers = [
-    { type: "openrouter", key: process.env.OPENROUTER_API_KEY },
-    { type: "groq", key: process.env.GROQ_API_KEY },
-    { type: "groq", key: process.env.GROQ_API_KEY_2 },
-  ];
+  // 5 layer fallback — tries each one until a reply comes back
+const layers = [
+  { type: "openrouter", key: process.env.OPENROUTER_API_KEY },
+  { type: "openrouter", key: process.env.OPENROUTER_API_KEY_2 },
+  { type: "groq",       key: process.env.GROQ_API_KEY },
+  { type: "groq",       key: process.env.GROQ_API_KEY_2 },
+  { type: "groq",       key: process.env.GROQ_API_KEY_3 },
+];
 
   let reply = null;
 
