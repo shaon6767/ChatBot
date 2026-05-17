@@ -199,19 +199,41 @@ function MessageContent({ content }) {
 }
 
 function Message({ msg }) {
-  if (msg.role === "system") {
+if (msg.role === "system") {
+  const isReceipt = msg.content.includes("✅ অর্ডার সফলভাবে");
+
+  if (isReceipt) {
     return (
-      <div style={{ display: "flex", justifyContent: "center", margin: "4px 0 12px" }}>
-        <span style={{
-          fontSize: "11px", color: "#9ca3af",
-          background: "#f3f4f6", borderRadius: "20px",
-          padding: "3px 12px",
+      <div style={{ display: "flex", justifyContent: "center", margin: "8px 0 16px" }}>
+        <div style={{
+          background: "#f0fdf4",
+          border: "1px solid #bbf7d0",
+          borderRadius: "16px",
+          padding: "14px 18px",
+          maxWidth: "90%",
+          fontSize: "13px",
+          lineHeight: "1.8",
+          color: "#166534",
+          whiteSpace: "pre-line",
         }}>
           {msg.content}
-        </span>
+        </div>
       </div>
     );
   }
+
+  return (
+    <div style={{ display: "flex", justifyContent: "center", margin: "4px 0 12px" }}>
+      <span style={{
+        fontSize: "11px", color: "#9ca3af",
+        background: "#f3f4f6", borderRadius: "20px",
+        padding: "3px 12px",
+      }}>
+        {msg.content}
+      </span>
+    </div>
+  );
+}
 
   const isUser = msg.role === "user";
 

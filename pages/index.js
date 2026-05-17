@@ -61,7 +61,16 @@ export default function Home() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(pendingOrder),
             });
-          } catch (err) {}
+
+            // Show order receipt to user
+            const receipt = `✅ অর্ডার সফলভাবে নেওয়া হয়েছে!\n\n🛍 পণ্য: ${pendingOrder.product}\n📦 পরিমাণ: ${pendingOrder.quantity}\n👤 নাম: ${pendingOrder.name}\n📞 ফোন: ${pendingOrder.phone}\n📍 ঠিকানা: ${pendingOrder.address}\n💰 মোট: ${pendingOrder.total}tk\n\nআমরা শীঘ্রই যোগাযোগ করব। ধন্যবাদ! 🎉`;
+
+            setMessages((prev) => [...prev, {
+              role: "system",
+              content: receipt,
+            }]);
+
+          } catch (err) { }
           setPendingOrder(null);
         }
 
