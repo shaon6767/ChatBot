@@ -20,15 +20,13 @@ function WelcomeScreen({ config, onSuggestion }) {
         padding: "16px",
         boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
       }}>
-        <p style={{
-          fontSize: "13px", fontWeight: 600,
-          color: "#6b7280", textAlign: "center",
+        <p className="text-2xl" style={{textAlign: "center",
           marginBottom: "8px",
         }}>
-          Welcome, how can I help you today?
+          Welcome, How Can I Help You Today?
         </p>
         <p style={{
-          fontSize: "13px", color: "#4b5563",
+          fontSize: "13px", color: "#070708",
           lineHeight: 1.6, textAlign: "center", margin: 0,
         }}>
           আমরা <strong style={{ color: "#111827" }}>{config?.name || "এই শপ"}</strong> থেকে আপনাকে স্বাগত জানাই। যেকোনো প্রশ্ন করুন বা অর্ডার দিন।
@@ -36,8 +34,8 @@ function WelcomeScreen({ config, onSuggestion }) {
       </div>
 
       {/* Hint */}
-      <p style={{
-        fontSize: "11px", color: "#9ca3af",
+      <p className="animate-bounce duration-200 ease-in-out" style={{
+        fontSize: "11px", color: "#212126",
         textAlign: "center", margin: 0,
       }}>
         নিচে লিখুন বা একটি প্রশ্ন বেছে নিন ↓
@@ -58,13 +56,13 @@ function WelcomeScreen({ config, onSuggestion }) {
           "দাম কমবে?",
         ].map((q) => (
           <button
+          className="bg-[#276CF5] hover:bg-[#3E5E9E]"
             key={q}
             onClick={() => onSuggestion(q)}
             style={{
               fontSize: "12px",
-              background: "#fff",
               border: "1px solid #e5e7eb",
-              color: "#4b5563",
+              color: "#fff",
               borderRadius: "12px",
               padding: "10px 12px",
               cursor: "pointer",

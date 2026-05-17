@@ -11,8 +11,17 @@ export default function MessageInput({ onSend, disabled }) {
   };
 
   return (
-    <div className="bg-white border-t border-gray-100 px-4 py-4 shrink-0">
-      <div className="flex items-center gap-3">
+    <div style={{
+      background: "#fff",
+      borderTop: "1px solid #f0f0f0",
+      padding: "12px 16px",
+      flexShrink: 0,
+    }}>
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+      }}>
         <input
           id="chat-input"
           type="text"
@@ -21,18 +30,41 @@ export default function MessageInput({ onSend, disabled }) {
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           disabled={disabled}
           placeholder="Write something..."
-          style={{ height: "52px" }}
-          className="flex-1 border border-gray-200 rounded-full px-6 text-base bg-gray-50 text-gray-800 focus:outline-none focus:border-indigo-400 disabled:opacity-60 transition-colors"
+          style={{
+            flex: 1,
+            height: "48px",
+            border: "1.5px solid #e5e7eb",
+            borderRadius: "50px",
+            padding: "0 20px",
+            fontSize: "14px",
+            fontFamily: "inherit",
+            background: "#f9fafb",
+            color: "#111827",
+            outline: "none",
+            opacity: disabled ? 0.6 : 1,
+          }}
         />
         <button
           onClick={handleSend}
           disabled={disabled || !text.trim()}
-          style={{ width: "52px", height: "52px" }}
-          className={`rounded-full flex items-center justify-center shrink-0 transition-all duration-200
-            ${disabled || !text.trim()
-              ? "bg-gray-200 cursor-not-allowed"
-              : "bg-gradient-to-br from-indigo-600 to-violet-600 shadow-lg shadow-indigo-200 hover:opacity-90 cursor-pointer"
-            }`}
+          style={{
+            width: "48px",
+            height: "48px",
+            borderRadius: "50%",
+            border: "none",
+            background: disabled || !text.trim()
+              ? "#e5e7eb"
+              : "linear-gradient(135deg, #4f46e5, #7c3aed)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            cursor: disabled || !text.trim() ? "not-allowed" : "pointer",
+            boxShadow: disabled || !text.trim()
+              ? "none"
+              : "0 4px 12px rgba(79,70,229,0.35)",
+            transition: "all 0.2s",
+          }}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
             <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
