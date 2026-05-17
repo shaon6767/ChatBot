@@ -50,7 +50,7 @@ ORDER COLLECTION RULES:
   4. Delivery address
 - After collecting all 4, show a summary and ask for confirmation ONCE
 - When showing summary, output a JSON block EXACTLY like this on its own line:
-  ORDERDATA:{"product":"Silk Saree","quantity":"2","name":"Rahim","phone":"01712345678","address":"Mirpur Dhaka","total":"3000"}
+  ORDERDATA:{"product":"ACTUAL_PRODUCT","quantity":"ACTUAL_QTY","name":"ACTUAL_NAME","phone":"ACTUAL_PHONE","address":"ACTUAL_ADDRESS","total":"ACTUAL_TOTAL"}
 - After showing summary, ask ONCE: "আপনি কি অর্ডার confirm করতে চান?"
 - If buyer says হ্যাঁ/yes/confirm/ji: reply with ORDER_CONFIRMED then say "আপনার অর্ডার নেওয়া হয়েছে! আমরা শীঘ্রই যোগাযোগ করব। ধন্যবাদ 🎉"
 - If buyer says না/no/nah/cancel or anything negative: say "ঠিক আছে, কোনো সমস্যা নেই। অন্য কিছু জানতে চাইলে বলুন 😊" then STOP asking about the order
@@ -86,10 +86,40 @@ YOUR JOB:
 
     const data = await response.json();
 
-    // Handle rate limit
     if (response.status === 429) {
+      // Wait 3 seconds and retry once automatically
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      const retryResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          max_tokens: 400,
+          temperature: 0.7,
+          messages: [
+            { role: "system", content: systemPrompt },
+            ...messages,
+          ],
+        }),
+      });
+
+      const retryData = await retryResponse.json();
+
+      if (retryResponse.status === 429 || retryData.error) {
+        return res.status(200).json({
+          reply: "একটু ব্যস্ত আছি, ৩০ সেকেন্ড পর আবার চেষ্টা করুন। 🙏",
+          orderData: null,
+          isConfirmed: false,
+        });
+      }
+
+      const retryReply = retryData.choices?.[0]?.message?.content || "Sorry, no response.";
       return res.status(200).json({
-        reply: "একটু ব্যস্ত আছি, ৩০ সেকেন্ড পর আবার চেষ্টা করুন। 🙏",
+        reply: retryReply,
         orderData: null,
         isConfirmed: false,
       });
@@ -108,12 +138,12 @@ YOUR JOB:
       try {
         orderData = JSON.parse(orderMatch[1]);
       } catch (e) {
-        const product  = reply.match(/"product"\s*:\s*"([^"]+)"/)?.[1];
+        const product = reply.match(/"product"\s*:\s*"([^"]+)"/)?.[1];
         const quantity = reply.match(/"quantity"\s*:\s*"([^"]+)"/)?.[1];
-        const name     = reply.match(/"name"\s*:\s*"([^"]+)"/)?.[1];
-        const phone    = reply.match(/"phone"\s*:\s*"([^"]+)"/)?.[1];
-        const address  = reply.match(/"address"\s*:\s*"([^"]+)"/)?.[1];
-        const total    = reply.match(/"total"\s*:\s*"([^"]+)"/)?.[1];
+        const name = reply.match(/"name"\s*:\s*"([^"]+)"/)?.[1];
+        const phone = reply.match(/"phone"\s*:\s*"([^"]+)"/)?.[1];
+        const address = reply.match(/"address"\s*:\s*"([^"]+)"/)?.[1];
+        const total = reply.match(/"total"\s*:\s*"([^"]+)"/)?.[1];
         if (product && name && phone) {
           orderData = { product, quantity, name, phone, address, total };
         }
