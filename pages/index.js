@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Head from "next/head";
 import ChatWindow from "../components/ChatWindow";
 import MessageInput from "../components/MessageInput";
@@ -24,6 +24,12 @@ export default function Home() {
   const [isTyping, setIsTyping] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [pendingOrder, setPendingOrder] = useState(null);
+  const pendingOrderRef = useRef(null);
+
+  const updatePendingOrder = (order) => {
+    pendingOrderRef.current = order;
+    setPendingOrder(order);
+  };
 
   const handleSend = async (text) => {
     const userMsg = { role: "user", content: text };
@@ -52,26 +58,32 @@ export default function Home() {
           content: "⚠️ দুঃখিত, একটু সমস্যা হয়েছে। আবার চেষ্টা করুন।",
         }]);
       } else {
-        if (data.orderData) setPendingOrder(data.orderData);
 
-        if (data.isConfirmed && pendingOrder) {
+        // Save order data whenever AI sends it
+        if (data.orderData) {
+          updatePendingOrder(data.orderData);
+        }
+
+        // Use ref to avoid stale state
+        const orderToSave = data.orderData || pendingOrderRef.current;
+
+        if (data.isConfirmed && orderToSave) {
           try {
             await fetch("/api/order", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(pendingOrder),
+              body: JSON.stringify(orderToSave),
             });
 
-            // Show order receipt to user
-            const receipt = `✅ অর্ডার সফলভাবে নেওয়া হয়েছে!\n\n🛍 পণ্য: ${pendingOrder.product}\n📦 পরিমাণ: ${pendingOrder.quantity}\n👤 নাম: ${pendingOrder.name}\n📞 ফোন: ${pendingOrder.phone}\n📍 ঠিকানা: ${pendingOrder.address}\n💰 মোট: ${pendingOrder.total}tk\n\nআমরা শীঘ্রই যোগাযোগ করব। ধন্যবাদ! 🎉`;
+            const receipt = `✅ অর্ডার সফলভাবে নেওয়া হয়েছে!\n\n🛍 পণ্য: ${orderToSave.product}\n📦 পরিমাণ: ${orderToSave.quantity}\n👤 নাম: ${orderToSave.name}\n📞 ফোন: ${orderToSave.phone}\n📍 ঠিকানা: ${orderToSave.address}\n💰 মোট: ${orderToSave.total}tk\n\nআমরা শীঘ্রই যোগাযোগ করব। ধন্যবাদ! 🎉`;
 
             setMessages((prev) => [...prev, {
               role: "system",
               content: receipt,
             }]);
 
-          } catch (err) { }
-          setPendingOrder(null);
+          } catch (err) {}
+          updatePendingOrder(null);
         }
 
         const aiMsg = { role: "assistant", content: data.reply };
@@ -171,7 +183,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Chat — takes all remaining space */}
           <ChatWindow
             messages={messages}
             isTyping={isTyping}
@@ -179,7 +190,6 @@ export default function Home() {
             onSuggestion={handleSend}
           />
 
-          {/* Input — fixed at bottom */}
           <MessageInput onSend={handleSend} disabled={isTyping} />
 
         </div>
