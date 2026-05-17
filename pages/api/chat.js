@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { messages, businessName, businessLang, businessRules } = req.body;
+  const { messages, businessName, businessRules } = req.body;
 
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: "Invalid request body" });
@@ -87,8 +87,8 @@ YOUR JOB:
     const data = await response.json();
 
     if (response.status === 429) {
-      // Wait 3 seconds and retry once automatically
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // Wait 5 seconds and retry once automatically
+      await new Promise((resolve) => setTimeout(resolve, 5000));
 
       const retryResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
@@ -97,7 +97,7 @@ YOUR JOB:
           "Authorization": `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
+          model: "llama-3.3-8b-instant",
           max_tokens: 400,
           temperature: 0.7,
           messages: [
@@ -118,10 +118,25 @@ YOUR JOB:
       }
 
       const retryReply = retryData.choices?.[0]?.message?.content || "Sorry, no response.";
+
+      let retryOrderData = null;
+      const retryOrderMatch = retryReply.match(/ORDERDATA:\s*({[\s\S]+?})/);
+      if (retryOrderMatch) {
+        try {
+          retryOrderData = JSON.parse(retryOrderMatch[1]);
+        } catch (e) { }
+      }
+
+      const retryIsConfirmed = retryReply.includes("ORDER_CONFIRMED");
+      const cleanRetryReply = retryReply
+        .replace(/ORDERDATA:\s*{[\s\S]+?}/, "")
+        .replace("ORDER_CONFIRMED", "")
+        .trim();
+
       return res.status(200).json({
-        reply: retryReply,
-        orderData: null,
-        isConfirmed: false,
+        reply: cleanRetryReply,
+        orderData: retryOrderData,
+        isConfirmed: retryIsConfirmed,
       });
     }
 
